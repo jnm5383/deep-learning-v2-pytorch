@@ -106,7 +106,9 @@ class NeuralNetwork(object):
         # Weight step (input to hidden)
         ##delta_weights_i_h += hidden_error_term * X[:, None]
         ##hidden_outputs = hidden_outputs.reshape(2,1) 
-        delta_weights_i_h += np.dot(X.reshape((X.shape[0],1)), hidden_error_term.reshape((hidden_error_term.shape[0],1)).T)
+        print(X)
+        print(hidden_error_term)
+        delta_weights_i_h += np.dot(hidden_error_term.reshape((hidden_error_term.shape[0],1)).T,X.reshape((X.shape[0],1)).T)
 
         # Weight step (hidden to output)
         ##delta_weights_h_o += output_error_term * hidden_outputs
@@ -123,6 +125,7 @@ class NeuralNetwork(object):
             n_records: number of records
 
         '''
+        print(delta_weights_i_h.shape,self.weights_hidden_to_output.shape)
         self.weights_hidden_to_output += self.lr * delta_weights_i_h/n_records # update hidden-to-output weights with gradient descent step
         self.weights_input_to_hidden += self.lr * delta_weights_h_o/n_records # update input-to-hidden weights with gradient descent step
 
