@@ -72,6 +72,7 @@ class NeuralNetwork(object):
         hidden_outputs =  self.activation_function(hidden_inputs)# signals from hidden layer90
 
         # TODO: Output layer - Replace these values with your calculations.
+        print(self.weights_hidden_to_output)
         final_inputs = np.dot(hidden_inputs,self.weights_hidden_to_output) # signals into final output layer
         final_outputs = final_inputs # signals from final output layer
         
@@ -106,14 +107,13 @@ class NeuralNetwork(object):
         # Weight step (input to hidden)
         ##delta_weights_i_h += hidden_error_term * X[:, None]
         ##hidden_outputs = hidden_outputs.reshape(2,1) 
-        print(X.shape)
-        print(hidden_error_term.shape)
-        print(delta_weights_i_h.shape)
         delta_weights_i_h += np.dot(hidden_error_term.reshape((hidden_error_term.shape[0],1)),X.reshape((X.shape[0],1)).T).T
 
         # Weight step (hidden to output)
         ##delta_weights_h_o += output_error_term * hidden_outputs
         delta_weights_h_o += np.dot(hidden_outputs.reshape((hidden_outputs.shape[0],1)), output_error_term.reshape((1,1)))
+        
+        print(delta_weights_h_o)
         return delta_weights_i_h, delta_weights_h_o
 
     def update_weights(self, delta_weights_i_h, delta_weights_h_o, n_records):
@@ -126,7 +126,9 @@ class NeuralNetwork(object):
             n_records: number of records
 
         '''
-        print(delta_weights_i_h.shape,self.weights_hidden_to_output.shape)
+        #print(self.weights_hidden_to_output, delta_weights_h_o)
+        #print(self.weights_input_to_hidden, delta_weights_i_h)
+
         self.weights_hidden_to_output += self.lr * delta_weights_h_o/n_records # update hidden-to-output weights with gradient descent step
         self.weights_input_to_hidden += self.lr * delta_weights_i_h/n_records # update input-to-hidden weights with gradient descent step
 
@@ -155,7 +157,7 @@ class NeuralNetwork(object):
 #########################################################
 # Set your hyperparameters here
 ##########################################################
-iterations = 100
+iterations = 1000
 learning_rate = 0.1
-hidden_nodes = 2
+hidden_nodes = 10
 output_nodes = 1
