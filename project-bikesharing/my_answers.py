@@ -72,8 +72,7 @@ class NeuralNetwork(object):
         hidden_outputs =  self.activation_function(hidden_inputs)# signals from hidden layer90
 
         # TODO: Output layer - Replace these values with your calculations.
-        print(self.weights_hidden_to_output)
-        final_inputs = np.dot(hidden_inputs,self.weights_hidden_to_output) # signals into final output layer
+        final_inputs = np.dot(hidden_outputs,self.weights_hidden_to_output) # signals into final output layer
         final_outputs = final_inputs # signals from final output layer
         
         return final_outputs, hidden_outputs
@@ -96,7 +95,7 @@ class NeuralNetwork(object):
         error = (y-final_outputs) # Output layer error is the difference between desired target and actual output.
         
         # TODO: Calculate the hidden layer's contribution to the error
-        hidden_error = np.dot(self.weights_hidden_to_output,error)#np.dot(self.weights_hidden_to_output, error)np.dot(output_error_term, weights_hidden_output)
+        hidden_error = np.dot(error,self.weights_hidden_to_output.T)#np.dot(self.weights_hidden_to_output, error)np.dot(output_error_term, weights_hidden_output)
         
         # TODO: Backpropagated error terms - Replace these values with your calculations.
         output_error_term = error
@@ -107,13 +106,13 @@ class NeuralNetwork(object):
         # Weight step (input to hidden)
         ##delta_weights_i_h += hidden_error_term * X[:, None]
         ##hidden_outputs = hidden_outputs.reshape(2,1) 
-        delta_weights_i_h += np.dot(hidden_error_term.reshape((hidden_error_term.shape[0],1)),X.reshape((X.shape[0],1)).T).T
+        delta_weights_i_h += hidden_error_term * X[:, None]
 
         # Weight step (hidden to output)
+        delta_weights_h_o += output_error_term * hidden_outputs[:, None] 
         ##delta_weights_h_o += output_error_term * hidden_outputs
-        delta_weights_h_o += np.dot(hidden_outputs.reshape((hidden_outputs.shape[0],1)), output_error_term.reshape((1,1)))
+        ##delta_weights_h_o += np.dot(hidden_outputs.reshape((hidden_outputs.shape[0],1)), output_error_term.reshape((1,1)))
         
-        print(delta_weights_h_o)
         return delta_weights_i_h, delta_weights_h_o
 
     def update_weights(self, delta_weights_i_h, delta_weights_h_o, n_records):
@@ -126,7 +125,7 @@ class NeuralNetwork(object):
             n_records: number of records
 
         '''
-        #print(self.weights_hidden_to_output, delta_weights_h_o)
+        #print(self.weights_hidden_to_output.shape, delta_weights_h_o)
         #print(self.weights_input_to_hidden, delta_weights_i_h)
 
         self.weights_hidden_to_output += self.lr * delta_weights_h_o/n_records # update hidden-to-output weights with gradient descent step
@@ -150,7 +149,7 @@ class NeuralNetwork(object):
         
         # TODO: Output layer - Replace these values with the appropriate calculations.
         final_inputs = np.dot(hidden_outputs, self.weights_hidden_to_output) # signals into final output layer
-        final_outputs = self.activation_function(final_inputs) # signals from final output 
+        final_outputs = final_inputs # signals from final output 
         return final_outputs
 
 
@@ -159,5 +158,5 @@ class NeuralNetwork(object):
 ##########################################################
 iterations = 1000
 learning_rate = 0.1
-hidden_nodes = 10
+hidden_nodes = 20
 output_nodes = 1
